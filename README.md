@@ -1,8 +1,8 @@
 ![rgs-rancher-banner](images/rgs-rancher-banner.png)
 
-# Effortless Deployment of RKE2, Rancher Manager, Longhorn, and Neuvector
+# Fácil instalación de RKE2, Rancher Manager, Longhorn y Neuvector
 
-### Table of Contents
+### Tabla de contenidos
 
 - [About Me](#about-me)
 - [Introduction](#introduction)
@@ -14,47 +14,46 @@
 - [Rancher NeuVector](#rancher-neuvector)
 - [Final Thoughts](#final-thoughts)
 
-## About Me
+## Acerca de mi
 
-A little bit about me and my history...
+Un poco de mi historia...
 
-- Former Contractor
-- U.S. Military Reservist
-- Open-Source Contributor
-- Built and Exited a Digital Firm
-- Active Volunteer Firefighter/EMT
+- Solution Architect para SUSE Mexico
+- He trabajado en el area de preventa por más de 8 años
+- Conocimiento en el area de on-premise, nube y ahora nube nativa
+- Gamer de nacimiento y ganador de un torneo de Team Fortreess 2 en 2022
 
-## Introduction
+## Introducción
 
-### Welcome to the Effortless Rancher Installation Guide
+### Bienvenido a la Guía de Fácil instalación de Rancher.
 
-In this deployment guide, we will be installing the entire Rancher Stack to include the following products:
+En esta guía de despliegue, instalaremos toda el stack de SUSE Rancher, que incluye los siguientes productos:
 
-- RKE2 (Kubernetes Distribution) - [click learn more](https://ranchergovernment.com/products/rke2)
-- Rancher Manager (Cluster Management) - [click to learn more](https://ranchergovernment.com/products/mcm)
-- Longhorn (Storage) - [click to learn more](https://www.ranchergovernment.com/products/longhorn)
-- Neuvector (Security) - [click to learn more](https://ranchergovernment.com/neuvector)
+- RKE2 (Distribución de Kubernetes) - [click learn more](https://ranchergovernment.com/products/rke2)
+- Rancher Manager (Administración de Clústeres) - [click to learn more](https://ranchergovernment.com/products/mcm)
+- Longhorn (Almacenamiento) - [click to learn more](https://www.ranchergovernment.com/products/longhorn)
+- Neuvector (Seguridad) - [click to learn more](https://ranchergovernment.com/neuvector)
 
-### Prerequisites
+### Prerequisitos
 
-- Three (3) Internet Connected Linux Servers
-- Terminal Utility (Terminal, VSCode, Termius etc...)
+- Tres (3) servidores Linux con acceso a internet
+- Herramientas para administrar los servidores (Terminal, VSCode, Termius etc...)
 
-## Watch the Video
+## Observa el video
 
-If you would rather follow this guide with an awesome video... please click below (https://youtu.be/P65r2ODNlTg)!
+Si prefieres seguir esta guía con un increíble video... por favor, haz clic a continuación. ()!
 
-[![rancher-effortless-youtube-video](images/rancher-effortless-youtube.png)](https://youtu.be/P65r2ODNlTg)
+[![rancher-effortless-youtube-video](images/rancher-effortless-youtube.png)]()
 
-## Infrastructure
+## Infraestructura
 
-For this deployment, we need three linux servers to be able to get everything up and running. I will be using three virtualized Rocky Linux 9.1 servers, provisioned by [Rancher Harvester](https://harvesterhci.io). Any linux distribution should work perfectly fine, as long as there is network connectivity. Here's a list of our [supported operating systems](https://docs.rke2.io/install/requirements#operating-systems). In order to configure these servers for Rancher, we will need these servers to be internet connected and accessible from your local device via `ssh`.
+Para este despliegue, necesitamos tres servidores Linux para poder poner todo en marcha. Estaremos utilizando tres servidores OpenSUSE Leap 15.5 virtualizados, aprovisionados por VirtualBox. Cualquier distribución de Linux debería funcionar perfectamente, siempre que haya conectividad de red. Aquí tienes una lista de nuestros [Sistemas Operativos soportados](https://docs.rke2.io/install/requirements#operating-systems). Para configurar estos servidores para Rancher, necesitaremos que estén conectados a internet y sean accesibles desde tu computadora a través de `ssh`.
 
-Here's an overview the architecture that we will be using for this deployment guide:
+Aquí tienes una visión general de la arquitectura que utilizaremos para esta guía de despliegue:
 
 ![rancher-harvester-vm-overview](images/rancher-harvester-vm-overview.png)
 
-Let's run the following commands on each of the nodes to ensure they have the neccessary packages and configuration settings.
+Ejecutemos los siguientes comandos en cada uno de los nodos para asegurar que tengan los paquetes y configuraciones necesarias.
 
 ```bash
 # server(s): rke2-cp-01, rke2-wk-01, and rke2-wk-02
