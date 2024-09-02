@@ -4,8 +4,8 @@
 
 ### Tabla de contenidos
 
-- [Acerca de mí](#about-me)
-- [Introduction](#introduction)
+- [Acerca de mí](#Acerca-de-mí)
+- [Introduction](#Introducción)
 - [Watch the Video](#watch-the-video)
 - [Infrastructure](#infrastructure)
 - [Rancher Kubernetes (RKE2)](#rancher-kubernetes-rke2)
@@ -14,7 +14,7 @@
 - [Rancher NeuVector](#rancher-neuvector)
 - [Final Thoughts](#final-thoughts)
 
-## Acerca de mi
+## Acerca de mí
 
 Un poco de mi historia...
 
