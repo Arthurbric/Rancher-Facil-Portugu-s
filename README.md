@@ -29,10 +29,10 @@ Un poco de mi historia...
 
 En esta guía de despliegue, instalaremos toda el stack de SUSE Rancher, que incluye los siguientes productos:
 
-- RKE2 (Distribución de Kubernetes) - [click learn more](https://ranchergovernment.com/products/rke2)
-- Rancher Manager (Administración de Clústeres) - [click to learn more](https://ranchergovernment.com/products/mcm)
-- Longhorn (Almacenamiento) - [click to learn more](https://www.ranchergovernment.com/products/longhorn)
-- Neuvector (Seguridad) - [click to learn more](https://ranchergovernment.com/neuvector)
+- RKE2 (Distribución de Kubernetes) - [Click aquí para conocer más](https://ranchergovernment.com/products/rke2)
+- Rancher Manager (Administración de Clústeres) - [Click aquí para conocer más](https://ranchergovernment.com/products/mcm)
+- Longhorn (Almacenamiento) - [Click aquí para conocer más](https://www.ranchergovernment.com/products/longhorn)
+- Neuvector (Seguridad) - [Click aquí para conocer más](https://ranchergovernment.com/neuvector)
 
 ### Prerequisitos
 
