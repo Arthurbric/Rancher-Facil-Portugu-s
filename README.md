@@ -4,7 +4,7 @@
 
 ### Tabla de contenidos
 
-- [About Me](#about-me)
+- [Acerca de mí](#about-me)
 - [Introduction](#introduction)
 - [Watch the Video](#watch-the-video)
 - [Infrastructure](#infrastructure)
