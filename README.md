@@ -180,7 +180,7 @@ Cuando la mayoría de las personas comienzan su viaje con Kubernetes y con Ranch
 
 ```bash
 # server(s): rke2-cp-01
-# Descargar e instalar Helm CLI
+# Descargar e instalar Helm
 mkdir -p /opt/rancher/helm
 cd /opt/rancher/helm
 
@@ -193,69 +193,69 @@ Ahora agreguemos los repositorios de Helm para Cert Manager y Rancher Manager:
 
 ```bash
 # server(s): rke2-cp-01
-# Add and Update the Helm Repositories
+# Agregar y actualizar los repositorios de Helm
 helm repo add jetstack https://charts.jetstack.io
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 helm repo update
 ```
 
-It should look like this:
+Debería verse así:
 
 ![rancher-helm-repo-status](images/rancher-helm-repo-status.png)
 
-Now let's install Cert Manager with the following commands:
+Ahora instalemos Cert Manager con los siguientes comandos:
 
 ```bash
 # server(s): rke2-cp-01
-# Create the Cert Manager Namespace and Install Cert Manager
+# Crear el namespace de Cert Manager y después instalar Cert Manager
 kubectl create namespace cert-manager
 
 helm upgrade -i cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true
 
-# Wait for the deployment and rollout
+# Espere la implementación y el lanzamiento.
 sleep 60
 
-# Verify the status of Cert Manager
+# Verificar el estado de Cert Manager
 kubectl get pods --namespace cert-manager
 ```
 
-It should look like this:
+Debería verse así:
 
 ![rancher-cert-manager-status](images/rancher-cert-manager-status.png)
 
-Now let's install the Rancher Manager with the following commands:
+Ahora instalemos Rancher Manager con los siguientes comandos (Notese el hostname que configuramos en los comandos, si lo deseas, puedes modificar este campo, así como el de password):
 
 ```bash
 # server(s): rke2-cp-01
-# Create the Rancher Namespace and Install Rancher
+# Crear el namespace de Rancher y después instalar Rancher
 kubectl create namespace cattle-system
 
 helm upgrade -i rancher rancher-stable/rancher --namespace cattle-system --set bootstrapPassword=rancherSecurePassword --set hostname=rancher.10.0.0.15.sslip.io
 
-# Wait for the deployment and rollout
+# Espere la implementación y el lanzamiento.
 sleep 45
 
-# Verify the status of the Rancher Manager
+# Verificar el estado de Rancher Manager
 kubectl get pods --namespace cattle-system
 ```
 
-It should look like this:
+Debería verse así:
 
 ![rancher-rancher-manager-status](images/rancher-rancher-manager-status.png)
 
-### Exploring the Rancher Manager
+### Explorando Rancher Manager
 
-Once all the pods show as `Running` in the `cattle-system` namespace, you can access the Rancher Manager! Since we are using `sslip.io` as our Hostname/DNS, we do not need to configure anything else to access the Rancher Manager. Let's head over the domain name and take a look at the Rancher Manager!
+Una vez que todos los pods se muestren en estado `Running` (En ejecución) sobre el namespace de "cattle-system", es posible puedes acceder a Rancher Manager! Dado que estamos usando `sslip.io` como nuestro nombre de host/DNS, no necesitamos configurar nada más para acceder a Rancher Manager. ¡Revisemos el hostname y echemos un vistazo al Rancher Manager!
 
-For my deployment, I will be using `https://rancher.10.0.0.15.sslip.io` to access the Rancher Manager.
+Para esta implementación, se utilizó `https://rancher.10.0.0.15.sslip.io` para acceder a Rancher Manager, en tu caso, verifica cual fue el nombre de host que configuraste en el paso anterior.
 
-It should look like this:
+Debería verse así:
 
 ![rancher-rancher-manager-bootstrap](images/rancher-rancher-manager-bootstrap.png)
 
 ![rancher-rancher-manager-terms](images/rancher-rancher-manager-terms.png)
 
-You should now see the Rancher Manager asking for a password that we set during installation. For my deployment, I will be using `rancherSecurePassword`. You will also have to verify the Rancher Manager URL and accept the Terms and Conditions. Once that is completed... It should look like this:
+Ahora debería visualizar Rancher Manager solicitando una contraseña que configuramos durante la instalación. Para mi implementación utilicé `rancherSecurePassword`. También deberás verificar la URL de Rancher Manager y aceptar los Términos y condiciones. Una vez completado... Debería verse así:
 
 ![rancher-rancher-manager-home](images/rancher-rancher-manager-home.png)
 
@@ -263,13 +263,13 @@ You now have the Rancher Manager sucessfully deployed on our RKE2 Kubernetes Clu
 
 ## Rancher Longhorn
 
-Let's move up the stack and start thinking about storage. Rancher Longhorn provides cloud native and highly available persistent block storage for Kubernetes, with backups and disaster recovery. In order to install Longhorn onto our cluster, we pretty much follow the same steps as we did for Cert Manager and the Rancher Manager.
+Ahora tiene Rancher Manager implementado con éxito en nuestro clúster RKE2 Kubernetes!!! Recuerde que hay muchas formas de configurarlo y esta fue solo una instalación mínima y sencilla. Siéntete libre de explorar todo lo que puedes hacer dentro de Rancher Manager, en este caso podemos pasaremos al siguiente paso de instalar Rancher Longhorn.
 
-Let's add the Helm Repository for Longhorn!
+Agreguemos el repositorio de Helm para Longhorn:
 
 ```bash
 # server(s): rke2-cp-01
-# Add and Update the Helm Repository
+# Agregar y actualizar el repositorio de Helm
 helm repo add longhorn https://charts.longhorn.io
 helm repo update
 ```
