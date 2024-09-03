@@ -133,7 +133,7 @@ Ahora comencemos configurando los nodos de Worker RKE2 agregando el archivo de c
 
 Si desea ver más formas de configurar el nodo worker de RKE2, consulte los [documentos del agente rke2] (https://docs.rke2.io/reference/linux_agent_config).
 
-_Nota: Debe completar cada uno de estos pasos en cada nodo de Worker._
+_Nota: Debe completar cada uno de estos pasos en cada nodo de Worker, además modifique la dirección IP del nodo de Control según sea la que estes utilizando._
 
 ```bash
 # server(s): rke2-wk-01 and rke2-wk-02
