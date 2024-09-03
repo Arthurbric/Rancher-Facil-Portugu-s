@@ -57,15 +57,14 @@ Ejecutemos los siguientes comandos en cada uno de los nodos para asegurar que te
 
 ```bash
 # server(s): rke2-cp-01, rke2-wk-01, and rke2-wk-02
-# Install Packages
-yum install -y iptables container-selinux libnetfilter_conntrack libnfnetlink libnftnl policycoreutils-python-utils cryptsetup
-yum install -y nfs-utils iscsi-initiator-utils; yum install -y zip zstd tree jq
+# Instalar los paquetes
+zypper install open-iscsi /
+systemctl enable iscsid /
+systemctl start iscsid /
 
-# Modify Settings
-# Not required for every operating system
-echo "InitiatorName=$(/sbin/iscsi-iname)" > /etc/iscsi/initiatorname.iscsi && systemctl enable --now iscsid
-systemctl stop firewalld; systemctl disable firewalld; systemctl stop nm-cloud-setup; systemctl disable nm-cloud-setup; systemctl stop nm-cloud-setup.timer; systemctl disable nm-cloud-setup.timer
-echo -e "[keyfile]\nunmanaged-devices=interface-name:cali*;interface-name:flannel*" > /etc/NetworkManager/conf.d/rke2-canal.conf
+# Deshabilitar el Firewall
+systemctl stop firewalld
+systemctl disable firewalld
 ```
 
 ## Rancher Kubernetes (RKE2)
