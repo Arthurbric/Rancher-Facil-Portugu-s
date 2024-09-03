@@ -58,13 +58,10 @@ Ejecutemos los siguientes comandos en cada uno de los nodos para asegurar que te
 ```bash
 # server(s): rke2-cp-01, rke2-wk-01, and rke2-wk-02
 # Instalar los paquetes
-zypper install open-iscsi /
-systemctl enable iscsid /
-systemctl start iscsid /
+zypper --non-interactive install -n open-iscsi && systemctl enable iscsid && systemctl start iscsid
 
 # Deshabilitar el Firewall
-systemctl stop firewalld
-systemctl disable firewalld
+systemctl stop firewalld && systemctl disable firewalld
 ```
 
 ## Rancher Kubernetes (RKE2)
