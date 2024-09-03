@@ -5,14 +5,14 @@
 ### Tabla de contenidos
 
 - [Acerca de mí](#Acerca-de-mí)
-- [Introduction](#Introducción)
-- [Watch the Video](#watch-the-video)
-- [Infrastructure](#infrastructure)
+- [Introducción](#Introducción)
+- [Observa el video](#Observa-el-video)
+- [Infrastructura](#Infrastructura)
 - [Rancher Kubernetes (RKE2)](#rancher-kubernetes-rke2)
 - [Rancher Multi Cluster Manager](#rancher-multi-cluster-manager)
 - [Rancher Longhorn](#rancher-longhorn)
 - [Rancher NeuVector](#rancher-neuvector)
-- [Final Thoughts](#final-thoughts)
+- [Conclusión](#Conclusión)
 
 ## Acerca de mí
 
@@ -66,49 +66,49 @@ systemctl stop firewalld && systemctl disable firewalld
 
 ## Rancher Kubernetes (RKE2)
 
-In order to configure and install RKE2, you need to have Control/Server nodes and Worker/Agent nodes. We will start by setting up the Control/Server node and then setting up the Worker/Agent nodes. There are many ways to accomplish this and this guide is meant for an effortless and minimal installation, please review the [rke2 docs](https://docs.rke2.io) for more information.
+Para configurar e instalar RKE2, es necesario tener nodos de "control" y nodos de "worker". Comenzaremos configurando el nodo Control y luego configurando los nodos Worker. Hay muchas maneras de lograr esto y esta guía está diseñada para una instalación mínima y de manera fácil. Revise los [documentos de rke2] (https://docs.rke2.io) para obtener más información.
 
 ### RKE2 Control Node
 
-Let's start by configuring the RKE2 Control/Server Node, by adding the configuration file. Since we are completing a effortless installation, we are only adding the RKE2 Token configuration option. I'm using `ssh` with `root` to access the `rke2-cp-01` server.
+Comencemos configurando el nodo de Control RKE2, agregando un archivo de configuración. Dado que estamos realizando una instalación sencilla, utilizaremos la opción de configuración por token para RKE2. Estoy en una sesión `ssh` con `root` para acceder al servidor `rke2-cp-01`.
 
-If you would like to see more ways to configure the RKE2 Control/Server, please check out the [rke2 server docs](https://docs.rke2.io/reference/server_config).
+Si deseas ver más formas de configurar el nodo de Control de RKE2, consulte los [documentos del servidor rke2] (https://docs.rke2.io/reference/server_config).
 
 ```bash
 # server(s): rke2-cp-01
-# Create the RKE2 Directory
+# Crear el directorio RKE2
 mkdir -p /etc/rancher/rke2/
 
-# Create the RKE2 Configuration File
+# Crea el archivo de configuración RKE2
 cat << EOF >> /etc/rancher/rke2/config.yaml
 token: rke2SecurePassword
 EOF
 ```
 
-Now that the configuration file is completed, let's install and start the RKE2 Control/Server Node:
+Ahora que el archivo de configuración está completo, instalemos e iniciemos el nodo de Control de RKE2:
 
 ```bash
 # server(s): rke2-cp-01
-# Download the RKE2 Control/Server
+# Descarga la distribucion de RKE2 e instala en modo Control
 curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=v1.28 INSTALL_RKE2_TYPE=server sh -
 
-# Start the RKE2 Control/Server Service
+# Inicie el servicio de Control de RKE2
 systemctl enable rke2-server.service && systemctl start rke2-server.service
 ```
 
-Let's verify that the RKE2 Control/Server is running using `systemctl status rke2-server`. It should look like this:
+Verifiquemos que el nodo de Control se esté ejecutando usando `systemctl status rke2-server`. Debería verse así:
 
 ![rancher-rke2-cp-01-systemctl](images/rancher-rke2-cp-01-systemctl.png)
 
-Now that we see that the RKE2 Control/Server is running, let's verify using `kubectl`.
+Ahora que vemos que el nodo de Control se está ejecutando con RKE2, verifiquemos usando `kubectl`.
 
 ```bash
 # server(s): rke2-cp-01
-# Symlink kubectl and containerd
+# Enlace simbólico para kubectl y containerd
 sudo ln -s /var/lib/rancher/rke2/data/v1*/bin/kubectl /usr/bin/kubectl
 sudo ln -s /var/run/k3s/containerd/containerd.sock /var/run/containerd/containerd.sock
 
-# Update BASHRC
+# Actualizar BASHRC
 cat << EOF >> ~/.bashrc
 export PATH=$PATH:/var/lib/rancher/rke2/bin:/usr/local/bin/
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
@@ -119,68 +119,68 @@ EOF
 # Source BASHRC
 source ~/.bashrc
 
-# Verify RKE2 is Running/Ready
+# Verifique que RKE2 esté funcionando/listo
 kubectl get nodes
 ```
 
-It should look like this:
+Debería verse así:
 
 ![rancher-rke2-cp-01-kubectl](images/rancher-rke2-cp-01-kubectl.png)
 
-### RKE2 Worker Nodes
+### RKE2 Nodos Worker
 
-Again, let's start by configuring the RKE2 Worker/Agent Nodes, by adding the configuration file. Since we are completing a effortless installation, we are only adding the RKE2 Server and RKE2 Token configuration options. I'm using `ssh` with `root` to access the `rke2-wk-01` and `rke2-wk-02` servers.
+Ahora comencemos configurando los nodos de Worker RKE2 agregando el archivo de configuración. Dado que estamos realizando una instalación sencilla,  utilizaremos la opción de configuración por token para RKE2 y la configuración de Worker. Estoy en una sesión de `ssh` con `root` para acceder a los servidores `rke2-wk-01` y `rke2-wk-02`.
 
-If you woud like to see more ways to configure the RKE2 Worker/Agent, please check out the [rke2 agent docs](https://docs.rke2.io/reference/linux_agent_config).
+Si desea ver más formas de configurar el nodo worker de RKE2, consulte los [documentos del agente rke2] (https://docs.rke2.io/reference/linux_agent_config).
 
-_Note: You need to complete each of these steps on each worker/agent server._
+_Nota: Debe completar cada uno de estos pasos en cada nodo de Worker._
 
 ```bash
 # server(s): rke2-wk-01 and rke2-wk-02
-# Create the RKE2 Directory
+# Crear el directorio RKE2
 mkdir -p /etc/rancher/rke2/
 
-# Create the RKE2 Configuration File
+# Cree el archivo de configuración RKE2
 cat << EOF >> /etc/rancher/rke2/config.yaml
 server: https://10.0.0.15:9345
 token: rke2SecurePassword
 EOF
 ```
 
-Now that the configuration file is completed, let's install and start the RKE2 Worker/Agent Nodes:
+Ahora que el archivo de configuración está completo, instalemos e iniciemos los nodos de Worker de RKE2:
 
 ```bash
 # server(s): rke2-wk-01 and rke2-wk-02
-# Download the RKE2 Worker/Agent
+# Descargar RKE2 e instalar en modo Worker
 curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=v1.28 INSTALL_RKE2_TYPE=agent sh -
 
-# Start the RKE2 Worker/Agent Service
+# Inicie el servicio de Worker de RKE2
 systemctl enable rke2-agent.service && systemctl start rke2-agent.service
 ```
 
-Let's head back to the `rke2-cp-01` server and verify the worker/agent nodes sucessfully joined the cluster.
+Regresemos al servidor `rke2-cp-01` y verifiquemos que los nodos de Worker se unieron exitosamente al clúster.
 
 ```bash
 # server(s): rke2-cp-01
-# Verify RKE2 is Running/Ready
+# Verifica que RKE2 esté funcionando/listo
 kubectl get nodes
 ```
 
-It should look like this:
+Debería verse así:
 
 ![rancher-rke2-cp-01-kubectl-all](images/rancher-rke2-cp-01-kubectl-all.png)
 
-Congraulations!! In a few minutes, you now have a RKE2 Cluster up and running! If you are already familiar with Kubernetes or RKE2, feel free to explore the cluster using `kubectl`. We are going to move onto installing the [Rancher Multi Cluster Manager](https://www.ranchergovernment.com/products/mcm), [Rancher Longhorn](https://www.ranchergovernment.com/products/longhorn), and [Rancher NeuVector](https://ranchergovernment.com/neuvector).
+Felicitaciones!! ¡Ya tiene su clúster RKE2 en funcionamiento! Si ya estás familiarizado con Kubernetes o RKE2, no dudes en explorar el clúster usando "kubectl". Ahora pasaremos a instalar [Rancher Multi Cluster Manager](https://www.ranchergovernment.com/products/mcm), [Rancher Longhorn](https://www.ranchergovernment.com/products/longhorn), y [Rancher NeuVector](https://ranchergovernment.com/neuvector).
 
 ## Rancher Multi Cluster Manager
 
-When most folks are starting their Kubernetes journey and their journey with Rancher Kubernetes, there is some confusion about the layers of Kubernetes. RKE2 is our Kubernetes distribution and the Rancher Multi Cluster Manager is our single pane of glass dashboard for managing any type of Kubernetes cluster (including our not to be named competitors). In order to run our Rancher Manager, we needed to start with a Kubernetes cluster and that's why we started with installing RKE2!
+Cuando la mayoría de las personas comienzan su viaje con Kubernetes y con Rancher Kubernetes, existe cierta confusión sobre las capas de Kubernetes. RKE2 es nuestra distribución de Kubernetes y Rancher Multi Cluster Manager es nuestro panel de control para administrar cualquier tipo de clúster de Kubernetes (incluidos cualquiera listados por la CNCF). Para ejecutar nuestro Rancher Manager, necesitábamos primero contar con un clúster de Kubernetes y es por eso que comenzamos con la instalación de RKE2.
 
-Let's get started with installing the Rancher Manager! In order to get the bits required to configure and install it, we need to use the [Helm CLI](https://helm.sh) for package management and then grab [Cert Manager](https://cert-manager.io) and the Rancher Manager. Let's use `ssh` with `root` to access the `rke2-cp-01` server and run the following commands:
+¡Comencemos con la instalación de Rancher Manager! Para obtener los componentes necesarios para configurarlo e instalarlo, necesitamos usar [Helm CLI](https://helm.sh) como administrador de paquetes (charts) para k8s y luego instalar el chart [Cert Manager](https://cert-manager.io) y finalmente el chart de Rancher Manager. Usemos `ssh` con `root` para acceder al servidor `rke2-cp-01` y ejecutar los siguientes comandos:
 
 ```bash
 # server(s): rke2-cp-01
-# Download and Install Helm CLI
+# Descargar e instalar Helm CLI
 mkdir -p /opt/rancher/helm
 cd /opt/rancher/helm
 
@@ -189,7 +189,7 @@ chmod 755 get_helm.sh && ./get_helm.sh
 mv /usr/local/bin/helm /usr/bin/helm
 ```
 
-Now let's add the Helm Repositories for Cert Manager and the Rancher Manager!
+Ahora agreguemos los repositorios de Helm para Cert Manager y Rancher Manager:
 
 ```bash
 # server(s): rke2-cp-01
@@ -363,7 +363,7 @@ It should look like this:
 
 You now have Rancher NeuVector deployed on our RKE2 Kuberenetes Cluster with the Rancher Manager and Rancher Longhorn!! Feel free to explore the NeuVector and run vulneriablity scans, investigate cluster assets, or check out your network activity. Here is where we would usually recommend users to try creating a new cluster or deploying a few test applications to see the true power behind Rancher. For now, we're going to move onto our final thoughts...
 
-## Final Thoughts
+## Conclusión
 
 In a few easy steps and a few minutes of your time, you have the core Rancher Stack deployed out and ready for use. I would say that statement alone is a very powerful considering the alternatives out there.
 
