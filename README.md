@@ -27,7 +27,7 @@ Un poco de mi historia...
 
 ### Bienvenido a la Guía de Fácil instalación de Rancher.
 
-En esta guía de despliegue, instalaremos toda el stack de SUSE Rancher, que incluye los siguientes productos:
+En esta guía de despliegue, instalaremos todo el stack de SUSE Rancher, que incluye los siguientes productos:
 
 - RKE2 (Distribución de Kubernetes) - [Click aquí para conocer más](https://ranchergovernment.com/products/rke2)
 - Rancher Manager (Administración de Clústeres) - [Click aquí para conocer más](https://ranchergovernment.com/products/mcm)
