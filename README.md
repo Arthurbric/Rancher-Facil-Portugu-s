@@ -43,7 +43,7 @@ En esta guía de despliegue, instalaremos todo el stack de SUSE Rancher, que inc
 
 Si prefieres seguir esta guía con un increíble video... por favor, haz clic a continuación. (https://www.youtube.com/watch?v=47ZcCMgKNWw)!
 
-[![rancher-effortless-youtube-video](images/rancher-effortless-youtube.png)]()
+[![rancher-effortless-youtube-video](images/rancher-effortless-thumbnail.png.png)]()
 
 ## Infraestructura
 
