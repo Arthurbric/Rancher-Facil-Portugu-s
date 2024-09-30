@@ -152,7 +152,7 @@ Ahora que el archivo de configuración está completo, instalemos e iniciemos lo
 ```bash
 # server(s): rke2-wk-01 and rke2-wk-02
 # Descargar RKE2 e instalar en modo Worker
-curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=v1.28 INSTALL_RKE2_TYPE=agent sh -
+curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=v1.30 INSTALL_RKE2_TYPE=agent sh -
 
 # Inicie el servicio de Worker de RKE2
 systemctl enable rke2-agent.service && systemctl start rke2-agent.service
