@@ -90,7 +90,7 @@ Ahora que el archivo de configuración está completo, instalemos e iniciemos el
 ```bash
 # server(s): rke2-cp-01
 # Descarga la distribucion de RKE2 e instala en modo Control
-curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=v1.28 INSTALL_RKE2_TYPE=server sh -
+curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=v1.30 INSTALL_RKE2_TYPE=server sh -
 
 # Inicie el servicio de Control de RKE2
 systemctl enable rke2-server.service && systemctl start rke2-server.service
