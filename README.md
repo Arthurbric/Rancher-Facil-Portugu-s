@@ -8,7 +8,7 @@
 
 ### Índice
 
-- [Sobre mim](#sobre-mim)
+- [Sobre Bryan Martínez](#sobre-Bryan-Martínez )
 - [Introdução](#introducao)
 - [Assista ao vídeo](https://www.youtube.com/watch?v=47ZcCMgKNWw)
 - [Infraestrutura](#infraestrutura)
@@ -18,7 +18,7 @@
 - [Rancher NeuVector](#rancher-neuvector)
 - [Conclusão](#conclusão)
 
-## Sobre mim
+## Sobre Bryan Martínez 
 
 Um pouco da minha história...
 
