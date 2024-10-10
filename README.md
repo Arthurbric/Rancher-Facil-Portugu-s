@@ -1,114 +1,125 @@
+
+
+---
+
 ![rgs-rancher-banner](images/rgs-rancher-banner.png)
 
-# Fácil instalación de RKE2, Rancher Manager, Longhorn y Neuvector
+# Instalação Fácil de RKE2, Rancher Manager, Longhorn e NeuVector
 
-### Tabla de contenidos
+### Índice
 
-- [Acerca de mí](#Acerca-de-mí)
-- [Introducción](#Introducción)
-- [Observa el video](#Observa-el-video)
-- [Infrastructura](#Infrastructura)
+- [Sobre mim](#sobre-mim)
+- [Introdução](#introducao)
+- [Assista ao vídeo](https://www.youtube.com/watch?v=47ZcCMgKNWw)
+- [Infraestrutura](#infraestrutura)
 - [Rancher Kubernetes (RKE2)](#rancher-kubernetes-rke2)
 - [Rancher Multi Cluster Manager](#rancher-multi-cluster-manager)
 - [Rancher Longhorn](#rancher-longhorn)
 - [Rancher NeuVector](#rancher-neuvector)
-- [Conclusión](#Conclusión)
+- [Conclusão](#conclusão)
 
-## Acerca de mí
+## Sobre mim
 
-Un poco de mi historia...
+Um pouco da minha história...
 
-- Solution Architect para SUSE Mexico
-- He trabajado en el area de preventa por más de 8 años
-- Conocimiento en el area de on-premise, nube y ahora nube nativa
-- Gamer de nacimiento, me encanta jugar muchos juegos de los 90s!
+- Arquiteto de Soluções na SUSE México
+- Trabalho na área de pré-vendas há mais de 8 anos
+- Conhecimento em ambientes on-premise, nuvem e agora cloud-native
+- Gamer de nascença, adoro jogar muitos jogos dos anos 90!
 
-## Introducción
+## Introdução {#introducao}
 
-### Bienvenido a la Guía de Fácil instalación de Rancher.
 
-En esta guía de despliegue, instalaremos todo el stack de SUSE Rancher, que incluye los siguientes productos:
+### Bem-vindo ao Guia de Instalação Fácil do Rancher.
 
-- RKE2 (Distribución de Kubernetes) - [Click aquí para conocer más](https://ranchergovernment.com/products/rke2)
-- Rancher Manager (Administración de Clústeres) - [Click aquí para conocer más](https://ranchergovernment.com/products/mcm)
-- Longhorn (Almacenamiento) - [Click aquí para conocer más](https://www.ranchergovernment.com/products/longhorn)
-- Neuvector (Seguridad) - [Click aquí para conocer más](https://ranchergovernment.com/neuvector)
+Neste guia de implementação, instalaremos todo o stack da SUSE Rancher, que inclui os seguintes produtos:
 
-### Prerequisitos
+- RKE2 (Distribuição Kubernetes) - [Clique aqui para saber mais](https://ranchergovernment.com/products/rke2)
+- Rancher Manager (Gerenciamento de Clusters) - [Clique aqui para saber mais](https://ranchergovernment.com/products/mcm)
+- Longhorn (Armazenamento) - [Clique aqui para saber mais](https://www.ranchergovernment.com/products/longhorn)
+- NeuVector (Segurança) - [Clique aqui para saber mais](https://ranchergovernment.com/neuvector)
 
-- Tres (3) servidores Linux con acceso a internet
-- Herramientas para administrar los servidores (Terminal, VSCode, Termius etc...)
+### Pré-requisitos
 
-## Observa el video
+- Três (3) servidores Linux com acesso à internet
+- Ferramentas para gerenciar os servidores (Terminal, VSCode, Termius, etc.)
 
-Si prefieres seguir esta guía con un increíble video... por favor, haz clic a continuación. (https://www.youtube.com/watch?v=47ZcCMgKNWw)!
+## Assista ao vídeo
+
+Se preferir seguir este guia com um incrível vídeo... por favor, clique abaixo. (https://www.youtube.com/watch?v=47ZcCMgKNWw)!
 
 [![rancher-effortless-youtube-video](images/rancher-effortless-thumbnail.png.png)]()
 
-## Infraestructura
+## Infraestrutura
 
-Para este despliegue, necesitamos tres servidores Linux para poder poner todo en marcha. Estaremos utilizando tres servidores OpenSUSE Leap 15.5 virtualizados, aprovisionados por VirtualBox. Cualquier distribución de Linux debería funcionar perfectamente, siempre que haya conectividad de red. Aquí tienes una lista de nuestros [Sistemas Operativos soportados](https://docs.rke2.io/install/requirements#operating-systems). Para configurar estos servidores para Rancher, necesitaremos que estén conectados a internet y sean accesibles desde tu computadora a través de `ssh`.
+Para essa implementação, precisaremos de três servidores Linux para colocar tudo em funcionamento. Estaremos utilizando três servidores OpenSUSE Leap 15.5 virtualizados, provisionados via VirtualBox. Qualquer distribuição Linux deve funcionar, desde que haja conectividade de rede. Aqui está uma lista dos nossos [Sistemas Operacionais suportados](https://docs.rke2.io/install/requirements#operating-systems). Para configurar esses servidores para Rancher, eles precisam estar conectados à internet e acessíveis via `ssh`.
 
-Aquí tienes una visión general de la arquitectura que utilizaremos para esta guía de despliegue:
+Aqui está uma visão geral da arquitetura que usaremos neste guia de implementação:
 
 ![rancher-harvester-vm-overview](images/rancher-harvester-vm-overview.png)
 
-Ejecutemos los siguientes comandos en cada uno de los nodos para asegurar que tengan los paquetes y configuraciones necesarias.
+Vamos executar os seguintes comandos em cada um dos nós para garantir que eles tenham os pacotes e configurações necessárias.
 
 ```bash
-# server(s): rke2-cp-01, rke2-wk-01, and rke2-wk-02
-# Instalar los paquetes
+# servidores: rke2-cp-01, rke2-wk-01 e rke2-wk-02
+# Instalar pacotes
 zypper --non-interactive install -n open-iscsi && systemctl enable iscsid && systemctl start iscsid
 
-# Deshabilitar el Firewall
+# Desativar o Firewall
 systemctl stop firewalld && systemctl disable firewalld
 ```
 
+
 ## Rancher Kubernetes (RKE2)
 
-Para configurar e instalar RKE2, es necesario tener nodos de "control" y nodos de "worker". Comenzaremos configurando el nodo Control y luego configurando los nodos Worker. Hay muchas maneras de lograr esto y esta guía está diseñada para una instalación mínima y de manera fácil. Revise los [documentos de rke2] (https://docs.rke2.io) para obtener más información.
+Para configurar e instalar o RKE2, é necessário ter nós de **Controle** e nós **Worker**. Começaremos configurando o nó de Controle e depois os nós Worker. Existem várias formas de realizar essa configuração, e esta guia é projetada para uma instalação mínima e fácil. Consulte a [documentação do RKE2](https://docs.rke2.io) para obter mais informações.
 
-### RKE2 Nodo de Control
+### RKE2 Nodo de Controle
 
-Comencemos configurando el nodo de Control RKE2, agregando un archivo de configuración. Dado que estamos realizando una instalación sencilla, utilizaremos la opción de configuración por token para RKE2. Estoy en una sesión `ssh` con `root` para acceder al servidor `rke2-cp-01`.
+Começaremos configurando o nó de Controle RKE2, adicionando um arquivo de configuração. Nesta instalação simples, utilizaremos a configuração por token para o RKE2. A sessão será feita via SSH com root para o servidor `rke2-cp-01`.
 
-Si deseas ver más formas de configurar el nodo de Control de RKE2, consulte los [documentos del servidor rke2] (https://docs.rke2.io/reference/server_config).
+Caso deseje explorar outras formas de configuração do nó de Controle, veja os [documentos do servidor RKE2](https://docs.rke2.io/reference/server_config).
+
+**Passos para o controle:**
 
 ```bash
-# server(s): rke2-cp-01
-# Crear el directorio RKE2
+# Criar o diretório RKE2
 mkdir -p /etc/rancher/rke2/
 
-# Crea el archivo de configuración RKE2
+# Criar o arquivo de configuração RKE2
 cat << EOF >> /etc/rancher/rke2/config.yaml
 token: rke2SecurePassword
 EOF
 ```
 
-Ahora que el archivo de configuración está completo, instalemos e iniciemos el nodo de Control de RKE2:
+Agora que o arquivo de configuração está completo, vamos instalar e iniciar o nó de Controle RKE2:
 
 ```bash
-# server(s): rke2-cp-01
-# Descarga la distribucion de RKE2 e instala en modo Control
+# Baixar e instalar o RKE2 no modo Controle
 curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=v1.30 INSTALL_RKE2_TYPE=server sh -
 
-# Inicie el servicio de Control de RKE2
+# Iniciar o serviço de Controle RKE2
 systemctl enable rke2-server.service && systemctl start rke2-server.service
 ```
 
-Verifiquemos que el nodo de Control se esté ejecutando usando `systemctl status rke2-server`. Debería verse así:
-
-![rancher-rke2-cp-01-systemctl](images/rancher-rke2-cp-01-systemctl.png)
-
-Ahora que vemos que el nodo de Control se está ejecutando con RKE2, verifiquemos usando `kubectl`.
+Para verificar o funcionamento do nó de Controle:
 
 ```bash
-# server(s): rke2-cp-01
-# Enlace simbólico para kubectl y containerd
+# Verificar o status do serviço
+systemctl status rke2-server
+```
+Vamos verificar se o nó de controle está em execução usando systemctl status rke2-server. Deve aparecer assim:
+
+![rancher-rke2-cp-01-systemctl](images/rancher-rke2-cp-01-systemctl.png)
+---
+Agora, vamos verificar usando `kubectl`:
+
+```bash
+# Criar link simbólico para kubectl e containerd
 sudo ln -s /var/lib/rancher/rke2/data/v1*/bin/kubectl /usr/bin/kubectl
 sudo ln -s /var/run/k3s/containerd/containerd.sock /var/run/containerd/containerd.sock
 
-# Actualizar BASHRC
+# Atualizar BASHRC
 cat << EOF >> ~/.bashrc
 export PATH=$PATH:/var/lib/rancher/rke2/bin:/usr/local/bin/
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
@@ -116,71 +127,71 @@ export CRI_CONFIG_FILE=/var/lib/rancher/rke2/agent/etc/crictl.yaml
 alias k=kubectl
 EOF
 
-# Source BASHRC
+# Aplicar BASHRC
 source ~/.bashrc
 
-# Verifique que RKE2 esté funcionando/listo
+# Verificar que o RKE2 está funcionando
 kubectl get nodes
 ```
-
-Debería verse así:
+Deveria aparecer assim:
 
 ![rancher-rke2-cp-01-kubectl](images/rancher-rke2-cp-01-kubectl.png)
+---
 
-### RKE2 Nodos Worker
+## RKE2 Nodos Worker
 
-Ahora comencemos configurando los nodos de Worker RKE2 agregando el archivo de configuración. Dado que estamos realizando una instalación sencilla,  utilizaremos la opción de configuración por token para RKE2 y la configuración de Worker. Estoy en una sesión de `ssh` con `root` para acceder a los servidores `rke2-wk-01` y `rke2-wk-02`.
+Agora, vamos configurar os nós de Worker do RKE2 adicionando o arquivo de configuração. Como estamos realizando uma instalação simples, utilizaremos a opção de configuração por token para o RKE2 e configuraremos os Workers. Estou em uma sessão SSH como root para acessar os servidores rke2-wk-01 e rke2-wk-02.
 
-Si desea ver más formas de configurar el nodo worker de RKE2, consulte los [documentos del agente rke2] (https://docs.rke2.io/reference/linux_agent_config).
+Se você deseja explorar outras formas de configurar o nó Worker do RKE2, consulte a [documentação do agente RKE2](https://docs.rke2.io/reference/linux_agent_config).
 
-_Nota: Debe completar cada uno de estos pasos en cada nodo de Worker, además modifique la dirección IP del nodo de Control según sea la que estes utilizando._
+**Nota:** Esses passos devem ser realizados em cada nó de Worker, e não se esqueça de ajustar o endereço IP do nó de Controle de acordo com a configuração que você está utilizando.
+
 
 ```bash
-# server(s): rke2-wk-01 and rke2-wk-02
-# Crear el directorio RKE2
+# Criar o diretório RKE2
 mkdir -p /etc/rancher/rke2/
 
-# Cree el archivo de configuración RKE2
+# Criar o arquivo de configuração RKE2 para os nós Worker
 cat << EOF >> /etc/rancher/rke2/config.yaml
 server: https://10.0.0.15:9345
 token: rke2SecurePassword
 EOF
 ```
 
-Ahora que el archivo de configuración está completo, instalemos e iniciemos los nodos de Worker de RKE2:
+Instale e inicie o serviço nos nós Worker:
 
 ```bash
-# server(s): rke2-wk-01 and rke2-wk-02
-# Descargar RKE2 e instalar en modo Worker
+# Baixar e instalar o RKE2 no modo Worker
 curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=v1.30 INSTALL_RKE2_TYPE=agent sh -
 
-# Inicie el servicio de Worker de RKE2
+# Iniciar o serviço dos nós Worker
 systemctl enable rke2-agent.service && systemctl start rke2-agent.service
 ```
 
-Regresemos al servidor `rke2-cp-01` y verifiquemos que los nodos de Worker se unieron exitosamente al clúster.
+Retorne ao servidor `rke2-cp-01` para verificar se os nós Worker foram unidos ao cluster:
 
 ```bash
-# server(s): rke2-cp-01
-# Verifica que RKE2 esté funcionando/listo
+# Verificar que RKE2 está funcionando
 kubectl get nodes
 ```
 
-Debería verse así:
+Deveria aparecer assim:
 
 ![rancher-rke2-cp-01-kubectl-all](images/rancher-rke2-cp-01-kubectl-all.png)
 
-Felicitaciones!! ¡Ya tiene su clúster RKE2 en funcionamiento! Si ya estás familiarizado con Kubernetes o RKE2, no dudes en explorar el clúster usando "kubectl". Ahora pasaremos a instalar [Rancher Multi Cluster Manager](https://www.ranchergovernment.com/products/mcm), [Rancher Longhorn](https://www.ranchergovernment.com/products/longhorn), y [Rancher NeuVector](https://ranchergovernment.com/neuvector).
+Parabéns! Agora você tem seu cluster RKE2 em funcionamento! Se você já está familiarizado com Kubernetes ou RKE2, sinta-se à vontade para explorar o cluster usando o "kubectl". Agora, vamos instalar o [Rancher Multi Cluster Manager](https://www.ranchergovernment.com/products/mcm), [Rancher Longhorn](https://www.ranchergovernment.com/products/longhorn) e [Rancher NeuVector](https://ranchergovernment.com/neuvector).
+
+---
 
 ## Rancher Multi Cluster Manager
 
-Cuando la mayoría de las personas comienzan su viaje con Kubernetes y con Rancher Kubernetes, existe cierta confusión sobre las capas de Kubernetes. RKE2 es nuestra distribución de Kubernetes y Rancher Multi Cluster Manager es nuestro panel de control para administrar cualquier tipo de clúster de Kubernetes (incluidos cualquiera listados por la CNCF). Para ejecutar nuestro Rancher Manager, necesitábamos primero contar con un clúster de Kubernetes y es por eso que comenzamos con la instalación de RKE2.
+Quando a maioria das pessoas começa sua jornada com Kubernetes e Rancher Kubernetes, há uma certa confusão sobre as camadas do Kubernetes. O RKE2 é a nossa distribuição de Kubernetes, enquanto o Rancher Multi Cluster Manager é o painel de controle que usamos para gerenciar qualquer tipo de cluster Kubernetes (incluindo aqueles listados pela CNCF). Para executar nosso Rancher Manager, primeiro precisávamos de um cluster Kubernetes, e é por isso que começamos com a instalação do RKE2.
 
-¡Comencemos con la instalación de Rancher Manager! Para obtener los componentes necesarios para configurarlo e instalarlo, necesitamos usar [Helm CLI](https://helm.sh) como administrador de paquetes (charts) para k8s y luego instalar el chart [Cert Manager](https://cert-manager.io) y finalmente el chart de Rancher Manager. Usemos `ssh` con `root` para acceder al servidor `rke2-cp-01` y ejecutar los siguientes comandos:
+Vamos começar a instalação do Rancher Manager! Para obter os componentes necessários para configurá-lo e instalá-lo, precisamos usar o [Helm CLI](https://helm.sh) como gerenciador de pacotes (charts) para Kubernetes, instalar o chart do [Cert Manager](https://cert-manager.io), e finalmente o chart do Rancher Manager. Vamos usar `ssh` com `root` para acessar o servidor `rke2-cp-01` e executar os seguintes comandos:
 
 ```bash
-# server(s): rke2-cp-01
-# Descargar e instalar Helm
+# Servidor(s): rke2-cp-01
+# Baixar e instalar o Helm
 mkdir -p /opt/rancher/helm
 cd /opt/rancher/helm
 
@@ -189,180 +200,185 @@ chmod 755 get_helm.sh && ./get_helm.sh
 mv /usr/local/bin/helm /usr/bin/helm
 ```
 
-Ahora agreguemos los repositorios de Helm para Cert Manager y Rancher Manager:
+Agora, vamos adicionar os repositórios do Helm para Cert Manager e Rancher Manager:
 
 ```bash
-# server(s): rke2-cp-01
-# Agregar y actualizar los repositorios de Helm
+# Servidor(s): rke2-cp-01
+# Adicionar e atualizar os repositórios do Helm
 helm repo add jetstack https://charts.jetstack.io
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 helm repo update
 ```
 
-Debería verse así:
+Deveria ficar assim:
 
 ![rancher-helm-repo-status](images/rancher-helm-repo-status.png)
 
-Ahora instalemos Cert Manager con los siguientes comandos:
+Agora, vamos instalar o Cert Manager com os seguintes comandos:
 
 ```bash
-# server(s): rke2-cp-01
-# Crear el namespace de Cert Manager y después instalar Cert Manager
+# Servidor(s): rke2-cp-01
+# Criar o namespace do Cert Manager e depois instalar o Cert Manager
 kubectl create namespace cert-manager
 
 helm upgrade -i cert-manager jetstack/cert-manager --namespace cert-manager --set installCRDs=true
 
-# Espere la implementación y el lanzamiento.
+# Aguarde a implantação e inicialização.
 sleep 60
 
-# Verificar el estado de Cert Manager
+# Verificar o status do Cert Manager
 kubectl get pods --namespace cert-manager
 ```
 
-Debería verse así:
+Deveria ficar assim:
 
 ![rancher-cert-manager-status](images/rancher-cert-manager-status.png)
 
-Ahora instalemos Rancher Manager con los siguientes comandos (Notese el hostname que configuramos en los comandos, si lo deseas, puedes modificar este campo, así como el de password):
+Agora, vamos instalar o Rancher Manager com os seguintes comandos (Observe o hostname que configuramos nos comandos; se preferir, você pode alterar esse campo, assim como a senha):
 
 ```bash
-# server(s): rke2-cp-01
-# Crear el namespace de Rancher y después instalar Rancher
+# Servidor(s): rke2-cp-01
+# Criar o namespace do Rancher e depois instalar o Rancher
 kubectl create namespace cattle-system
 
 helm upgrade -i rancher rancher-stable/rancher --namespace cattle-system --set bootstrapPassword=rancherSecurePassword --set hostname=rancher.10.0.0.15.sslip.io
 
-# Espere la implementación y el lanzamiento.
+# Aguarde a implantação e inicialização.
 sleep 45
 
-# Verificar el estado de Rancher Manager
+# Verificar o status do Rancher Manager
 kubectl get pods --namespace cattle-system
 ```
 
-Debería verse así:
+Deveria ficar assim:
 
 ![rancher-rancher-manager-status](images/rancher-rancher-manager-status.png)
+---
 
-### Explorando Rancher Manager
+## Explorando o Rancher Manager
 
-Una vez que todos los pods se muestren en estado `Running` (En ejecución) sobre el namespace de `cattle-system`, es posible puedes acceder a Rancher Manager! Dado que estamos usando `sslip.io` como nuestro nombre de host/DNS, no necesitamos configurar nada más para acceder a Rancher Manager. ¡Revisemos el hostname y echemos un vistazo al Rancher Manager!
+Depois que todos os pods estiverem no estado `Running` (Em execução) no namespace `cattle-system`, você pode acessar o Rancher Manager! Como estamos usando `sslip.io` como nosso nome de host/DNS, não é necessário configurar mais nada para acessar o Rancher Manager. Vamos verificar o hostname e dar uma olhada no Rancher Manager!
 
-Para esta implementación, se utilizó `https://rancher.10.0.0.15.sslip.io` para acceder a Rancher Manager, en tu caso, verifica cual fue el nombre de host que configuraste en el paso anterior.
+Para esta implementação, usamos `https://rancher.10.0.0.15.sslip.io` para acessar o Rancher Manager. No seu caso, verifique qual foi o nome de host configurado na etapa anterior.
 
-Debería verse así:
+Deve parecer assim:
 
 ![rancher-rancher-manager-bootstrap](images/rancher-rancher-manager-bootstrap.png)
 
 ![rancher-rancher-manager-terms](images/rancher-rancher-manager-terms.png)
 
-Ahora debería visualizar Rancher Manager solicitando una contraseña que configuramos durante la instalación. Para mi implementación utilicé `rancherSecurePassword`. También deberás verificar la URL de Rancher Manager y aceptar los Términos y condiciones. Una vez completado... Debería verse así:
+Agora você deve visualizar o Rancher Manager solicitando a senha que configuramos durante a instalação. Para esta implementação, usei `rancherSecurePassword`. Você também precisará verificar a URL do Rancher Manager e aceitar os Termos e Condições. Depois de concluir... Deve parecer assim:
 
 ![rancher-rancher-manager-home](images/rancher-rancher-manager-home.png)
 
-Ahora tienes Rancher Manager implementado con éxito en nuestro clúster RKE2 Kubernetes!!! Recuerda que hay muchas formas de configurarlo y esta fue solo una instalación mínima y sencilla. Siéntete libre de explorar todo lo que puedes hacer dentro de Rancher Manager, en este caso podemos pasaremos al siguiente paso de instalar Rancher Longhorn.
+Agora você tem o Rancher Manager implementado com sucesso em nosso cluster RKE2 Kubernetes!!! Lembre-se de que existem várias maneiras de configurá-lo, e esta foi apenas uma instalação mínima e simples. Sinta-se à vontade para explorar tudo o que pode fazer dentro do Rancher Manager. Neste caso, passaremos para a próxima etapa de instalação do Rancher Longhorn.
 
 ## Rancher Longhorn
 
-Agreguemos el repositorio de Helm para Longhorn:
+Vamos adicionar o repositório do Helm para Longhorn:
 
 ```bash
-# server(s): rke2-cp-01
-# Agregar y actualizar el repositorio de Helm
+# servidor(s): rke2-cp-01
+# Adicionar e atualizar o repositório do Helm
 helm repo add longhorn https://charts.longhorn.io
 helm repo update
 ```
 
-Debería verse así:
+Deve parecer assim:
 
 ![rancher-helm-repo-status-longhorn](images/rancher-helm-repo-status-longhorn.png)
 
-Ahora instalemos Longhorn con los siguientes comandos (Recuerda revisar los comandos por si gustas modificar opciones como el hostname):
+Agora, vamos instalar o Longhorn com os seguintes comandos (Lembre-se de revisar os comandos caso deseje modificar opções, como o hostname):
 
 ```bash
-# server(s): rke2-cp-01
-# Cree el namespace de Longhorn e instale Longhorn
+# servidor(s): rke2-cp-01
+# Criar o namespace do Longhorn e instalar o Longhorn
 kubectl create namespace longhorn-system
 
 helm upgrade -i longhorn longhorn/longhorn --namespace longhorn-system --set ingress.enabled=true --set ingress.host=longhorn.10.0.0.15.sslip.io
 
-# Espere la implementación y el lanzamiento.
+# Aguarde a implementação e o lançamento.
 sleep 60
 
-# Verificar el estado de Longhorn
+# Verificar o status do Longhorn
 kubectl get pods --namespace longhorn-system
 ```
 
 Debería verse así:
 
 ![rancher-longhorn-status](images/rancher-longhorn-status.png)
+---
 
-### Explorando Rancher Longhorn
 
-Una vez que todos los pods se muestren como `Running` (En ejecución) en el espacio de nombres `longhorn-system`, es posible acceder Rancher Longhorn! Al igual que Rancher Manager, utilizamos `sslip.io`, por lo que no se requiere configuración adicional para acceder a Longhorn. Vayamos al nombre de dominio.
+### Explorando o Rancher Longhorn
 
-Para esta implementación, se utilizó `https://longhorn.10.0.0.15.sslip.io` para acceder a Rancher Longhorn.
+Assim que todos os pods estiverem no estado `Running` (Em execução) no namespace `longhorn-system`, você poderá acessar o Rancher Longhorn! Assim como no Rancher Manager, utilizamos `sslip.io`, portanto, não é necessário fazer configurações adicionais para acessar o Longhorn. Vamos ao nome de domínio.
 
-Debería verse así:
+Para esta implementação, utilizamos `https://longhorn.10.0.0.15.sslip.io` para acessar o Rancher Longhorn.
+
+Deve parecer assim:
 
 ![rancher-longhorn-home](images/rancher-longhorn-home.png)
 
-¡Ahora tienes Rancher Longhorn implementado con éxito en nuestro clúster RKE2 con Rancher Manager! Siéntete libre de explorar el panel de Longhorn y ver lo fácil que es administrar los volúmenes, realizar copias de seguridad en un Bucket de S3 o configurar recuperación de desastres entre clústeres. Por lo pronto, pasemos a instalar Rancher NeuVector.
+Agora você tem o Rancher Longhorn implementado com sucesso em nosso cluster RKE2 com o Rancher Manager! Sinta-se à vontade para explorar o painel do Longhorn e ver como é fácil gerenciar volumes, fazer backups em um bucket S3 ou configurar recuperação de desastres entre clusters. Por enquanto, vamos passar para a instalação do Rancher NeuVector.
 
 ## Rancher NeuVector
 
-¡Agreguemos el repositorio Helm para NeuVector!
+Vamos adicionar o repositório Helm para o NeuVector!
 
 ```bash
-# server(s): rke2-cp-01
-# Agregar y actualizar el repositorio de Helm
+# servidor(s): rke2-cp-01
+# Adicionar e atualizar o repositório do Helm
 helm repo add neuvector https://neuvector.github.io/neuvector-helm
 helm repo update
 ```
 
-Debería verse así:
+Deve parecer assim:
 
 ![rancher-helm-repo-status-neuvector](images/rancher-helm-repo-status-neuvector.png)
 
-Ahora instalemos NeuVector con los siguientes comandos (Recuerda revisar los comandos por si gustas modificar opciones como el hostname:
+Agora, vamos instalar o NeuVector com os seguintes comandos (Lembre-se de revisar os comandos caso deseje modificar opções, como o hostname):
 
 ```bash
-# server(s): rke2-cp-01
-# Crea el namespace de NeuVector e instale NeuVector
+# servidor(s): rke2-cp-01
+# Criar o namespace do NeuVector e instalar o NeuVector
 kubectl create namespace cattle-neuvector-system
 
 helm upgrade -i neuvector neuvector/core --namespace cattle-neuvector-system --set k3s.enabled=true --set manager.ingress.enabled=true --set manager.svc.type=ClusterIP --set controller.pvc.enabled=true --set manager.ingress.host=neuvector.10.0.0.15.sslip.io --set global.cattle.url=https://rancher.10.0.0.15.sslip.io --set controller.ranchersso.enabled=true --set rbac=true
 
-# Espere la implementación y el lanzamiento
+# Aguarde a implementação e o lançamento
 sleep 60
 
-# Verificar el estado de Neuvector
+# Verificar o status do NeuVector
 kubectl get pods --namespace cattle-neuvector-system
 ```
 
-Debería verse así:
+Deve parecer assim:
 
 ![rancher-neuvector-status](images/rancher-neuvector-status.png)
 
-### Explorando Rancher NeuVector
+## Explorando o Rancher NeuVector
 
-Una vez que todos los pods se muestren en estado `Running` (En ejecución) en el namespace de "cattle-neuvector-system", podrás acceder a NeuVector. Al igual que Rancher Manager y Rancher Longhorn, utilizamos `sslip.io`, por lo que no se requiere configuración adicional para acceder a NeuVector. Vayamos al nombre de dominio.
+Assim que todos os pods estiverem no estado `Running` (Em execução) no namespace "cattle-neuvector-system", você poderá acessar o NeuVector. Assim como no Rancher Manager e Rancher Longhorn, utilizamos `sslip.io`, então não é necessário fazer mais configurações para acessar o NeuVector. Vamos ao nome de domínio.
 
-Para esta implementación, se utilizó `https://neuvector.10.0.0.15.sslip.io` para acceder a Neuvector.
+Para esta implementação, utilizamos `https://neuvector.10.0.0.15.sslip.io` para acessar o NeuVector.
 
-Debería verse así:
+Deve parecer assim:
 
 ![rancher-neuvector-bootstrap](images/rancher-neuvector-bootstrap.png)
 
-Ahora deberías visualizar a NeuVector solicitando el nombre de usuario y la contraseña predeterminados. El nombre de usuario predeterminado es "admin" y la contraseña predeterminada es "admin".
+Agora você deverá ver o NeuVector solicitando o nome de usuário e senha padrão. O nome de usuário padrão é "admin" e a senha padrão é "admin".
 
-Debería verse así:
+Deve parecer assim:
 
 ![rancher-neuvector-home](images/rancher-neuvector-home.png)
 
-¡Ahora tiene Rancher NeuVector implementado en nuestro clúster RKE2 con Rancher Manager y Rancher Longhorn! Siéntete libre de explorar NeuVector y ejecutar análisis de vulnerabilidades, investigar los componentes del clúster o comprobar la actividad de tu red de k8s. Aquí es donde normalmente recomendaríamos a los usuarios que intenten crear un nuevo clúster o implementar algunas aplicaciones de prueba para ver el verdadero poder detrás de Rancher. Por ahora, vamos a pasar a nuestra Conclusión...
+Agora você tem o Rancher NeuVector implementado no nosso cluster RKE2 com Rancher Manager e Rancher Longhorn! Sinta-se à vontade para explorar o NeuVector, executar análises de vulnerabilidade, investigar os componentes do cluster ou verificar a atividade da rede do seu Kubernetes. Aqui, normalmente recomendamos aos usuários que tentem criar um novo cluster ou implementar algumas aplicações de teste para ver o verdadeiro poder do Rancher. Por enquanto, vamos passar para a nossa Conclusão...
 
-## Conclusión
+## Conclusão
 
-En unos sencillos pasos y un par de minutos, pudimos implementar todo el stack de Rancher y está listo para usar. Me parece que la forma que instalamos los componentes fue muy "fácil", es por eso que llamé a esta guía como "Rancher fácil".
+Em poucos passos simples e em questão de minutos, conseguimos implementar todo o stack do Rancher, pronto para ser explorado e utilizado. A facilidade com que instalamos esses componentes é o que torna essa jornada tão empolgante e acessível, por isso batizei este guia de "Rancher fácil".
 
-Si tienes algún problema con esta guía de implementación por favor, no dudes en comunicarte conmigo! Gracias, y hasta pronto!
+Se você encontrar algum desafio durante a implementação, estarei à disposição para ajudar! Lembre-se, cada passo dado é um avanço na jornada de dominar o Kubernetes com o Rancher. Obrigado por seguir até aqui, e que essa experiência seja apenas o começo de muitas conquistas no mundo da tecnologia.
+
+Continue explorando, aprendendo e alcançando novos horizontes! Até breve! 🌟
