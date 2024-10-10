@@ -20,7 +20,7 @@
 
 ## Sobre Bryan Martínez 
 
-Um pouco da minha história...
+Um pouco da história do Bryan...
 
 - Arquiteto de Soluções na SUSE México
 - Trabalho na área de pré-vendas há mais de 8 anos
