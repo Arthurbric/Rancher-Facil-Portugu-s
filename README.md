@@ -9,7 +9,7 @@
 ### Índice
 
 - [Sobre Bryan Martínez](#sobre-Bryan-Martínez )
-- [Introducão](#introducao)
+- [Introducao](#introducao)
 - [Assista ao vídeo](https://www.youtube.com/watch?v=47ZcCMgKNWw)
 - [Infraestrutura](#infraestrutura)
 - [Rancher Kubernetes (RKE2)](#rancher-kubernetes-rke2)
@@ -27,7 +27,7 @@ Um pouco da história do Bryan...
 - Conhecimento em ambientes on-premise, nuvem e agora cloud-native
 - Gamer de nascença, adoro jogar muitos jogos dos anos 90!
 
-## Introducão 
+## Introducao 
 
 
 ### Bem-vindo ao Guia de Instalação Fácil do Rancher.
