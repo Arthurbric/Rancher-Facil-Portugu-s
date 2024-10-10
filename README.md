@@ -27,7 +27,7 @@ Um pouco da história do Bryan...
 - Conhecimento em ambientes on-premise, nuvem e agora cloud-native
 - Gamer de nascença, adoro jogar muitos jogos dos anos 90!
 
-## Introdução {#introducao}
+## Introdução 
 
 
 ### Bem-vindo ao Guia de Instalação Fácil do Rancher.
